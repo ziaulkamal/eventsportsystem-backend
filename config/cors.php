@@ -3,15 +3,7 @@
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => [
-        'http://localhost:3000',
-        'http://103.127.96.144:8101',
-        'http://103.127.96.144:8121',
-        'http://103.127.96.144:3003',
-        'http://localhost:8121',
-        'http://192.168.29.132:8121',
-        'http://192.168.29.132:3003',
-    ], // Ganti dengan URL frontend Anda
+    'allowed_origins' => ['*'], // Ganti dengan URL frontend Anda
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
