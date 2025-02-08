@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Coach;
 use App\Models\Kemendagri\Districts;
 use App\Models\Kemendagri\Provinces;
 use App\Models\Kemendagri\Regencies;
@@ -40,7 +41,7 @@ class Person extends Model
 
     protected $casts = [
         'id' => 'string', // Ensure UUID is cast as string
-        'birthdate' => 'date', // Cast birthdate as date
+        'birthdate' => 'date:Y-m-d', // Cast birthdate as date
     ];
 
     // Relasi ke model Athlete
@@ -49,6 +50,9 @@ class Person extends Model
         return $this->hasOne(Athlete::class, 'peopleId');
     }
 
+    public function coach() {
+        return $this->hasOne(Coach::class, 'peopleId');
+    }
     // Relasi ke model Document
     public function document()
     {

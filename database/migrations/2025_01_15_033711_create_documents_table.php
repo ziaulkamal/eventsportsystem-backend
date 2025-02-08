@@ -10,11 +10,14 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('imageProfile')->nullable(); // Path ke file foto profil
-            $table->string('familyProfile')->nullable(); // Path ke file foto KK
-            $table->string('ktpPhoto')->nullable(); // Path ke file foto KTP
-            $table->string('selfiePhoto')->nullable(); // Path ke file foto selfie
-            $table->json('extra')->nullable(); // Kolom extra tetap ada
+            $table->string('docsKtp')->nullable(); // Path ke file foto profil
+            $table->string('docsIjazah')->nullable(); // Path ke file foto KK
+            $table->string('docsSim')->nullable(); // Path ke file foto KTP
+            $table->string('docsAkte')->nullable(); // Path ke file foto selfie
+            $table->string('docsTransport')->nullable(); // Path ke file foto selfie
+            $table->string('docsSelfieKtp')->nullable(); // Path ke file foto selfie
+            $table->string('docsImageProfile')->nullable(); // Path ke file foto selfie
+
             $table->uuid('userId')->nullable(); // ID pengguna terkait
             $table->timestamps();
         });

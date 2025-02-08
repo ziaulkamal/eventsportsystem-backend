@@ -7,6 +7,7 @@ use Database\Seeders\DefaultUserSeeder;
 use Database\Seeders\KemendagriWilayahSeeder;
 use Database\Seeders\MasterAuthSeeder;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Storage::deleteDirectory('public');
         $this->call([
             KemendagriWilayahSeeder::class,
             DefaultUserSeeder::class,

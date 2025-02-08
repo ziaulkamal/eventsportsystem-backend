@@ -142,12 +142,12 @@ class Controller extends BaseController
             ], 404);
         } catch (RequestException $e) {
             // Tangani error
-            $errorResponse = $e->getResponse();
-            $errorMessage = $errorResponse ? $errorResponse->getBody()->getContents() : $e->getMessage();
+            // $errorResponse = $e->getResponse();
+            // $errorMessage = $errorResponse ? $errorResponse->getBody()->getContents() : $e->getMessage();
 
             return response()->json([
                 'error' => 'Failed to fetch data',
-                'message' => $errorMessage,
+                // 'message' => $errorMessage,
             ], 500);
         }
     }

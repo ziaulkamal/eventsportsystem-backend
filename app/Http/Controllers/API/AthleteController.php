@@ -52,6 +52,7 @@ class AthleteController extends Controller
         return response()->json($athlete);
     }
 
+
     // Update an athlete
     public function update(Request $request, $id)
     {
@@ -85,6 +86,17 @@ class AthleteController extends Controller
         $athlete->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function getpeople($id) {
+        $athlete = Athlete::where('peopleId', $id)->first();
+        if (!$athlete) {
+            return response()->json([
+                'message' => 'Atleet not found'
+            ], 404);
+        }
+
+        return response()->json($athlete);
     }
 
 }

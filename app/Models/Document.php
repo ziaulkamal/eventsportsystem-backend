@@ -18,11 +18,13 @@ class Document extends Model
     // Kolom yang dapat diisi (mass assignable)
     protected $fillable = [
         'id',
-        'imageProfile',
-        'familyProfile',
-        'ktpPhoto',
-        'selfiePhoto',
-        'extra',
+        'docsKtp',
+        'docsIjazah',
+        'docsSim',
+        'docsAkte',
+        'docsTransport',
+        'docsSelfieKtp',
+        'docsImageProfile',
         'userId',
     ];
 

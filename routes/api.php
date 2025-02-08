@@ -20,6 +20,8 @@ use App\Http\Controllers\API\VenueController;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\CoachController;
+
 
 
 // Routes tanpa autentikasi (akses umum)
@@ -31,9 +33,16 @@ Route::middleware('auth:sanctum')->get('/protected-endpoint', function (Request 
     return response()->json(['message' => 'Authenticated']);
 });
 
+Route::get('athlete-complete', [PersonController::class, 'athlete']);
+Route::get('coach-complete', [PersonController::class, 'coach']);
+Route::get('athelete-people/{id}', [AthleteController::class, 'getpeople']);
+Route::get('coach-people/{id}', [CoachController::class, 'getpeople']);
 // Rute login (tidak perlu autentikasi untuk login)
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::apiResource('people', PersonController::class);
+Route::apiResource('documents', DocumentController::class);
+Route::apiResource('coaches', CoachController::class);
+Route::patch('documents-patch/{id}', [DocumentController::class, 'doPatch']);
 // Routes yang dilindungi autentikasi (auth:sanctum middleware)
 Route::middleware(['auth:sanctum'])->group(function () {
     // Logout route (membutuhkan autentikasi)
@@ -42,13 +51,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // API protected routes that require authentication
     Route::apiResource('sport-classes', SportClassController::class);
     Route::apiResource('sports', SportController::class);
-    Route::apiResource('people', PersonController::class);
 
     // Rute-rute khusus
-    Route::get('athlete-complete', [PersonController::class, 'athlete']);
     Route::get('people/find-by-nik/{nik}', [PersonController::class, 'findByNIK']);
     Route::apiResource('athletes', AthleteController::class);
-    Route::apiResource('documents', DocumentController::class);
     Route::apiResource('images', ImageController::class);
     Route::apiResource('venues', VenueController::class);
     Route::apiResource('schedules', ScheduleController::class);

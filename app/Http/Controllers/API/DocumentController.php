@@ -115,15 +115,14 @@ class DocumentController extends Controller
     {
         // Validasi input
         $validator = Validator::make($request->all(), [
-            'imageProfile' => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
-            'familyProfile' => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
-            'ktpPhoto' => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
-            'selfiePhoto' => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
-            'userId' => 'nullable|uuid',
-            'additionalFiles' => 'nullable|array',
-            'additionalFiles.*.file' => 'sometimes|file|mimes:jpeg,png,jpg,pdf|max:5120', // Max 5MB
-            'additionalFiles.*.name' => 'required_with:additionalFiles.*.file|string',
-            'additionalFiles.*.type' => 'required_with:additionalFiles.*.file|string',
+            'docsKtp'           => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'docsIjazah'        => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'docsSim'           => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'docsAkte'          => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'docsTransport'     => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'docsSelfieKtp'     => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'docsImageProfile'  => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',
+            'userId'            => 'nullable|uuid',
         ]);
 
         if ($validator->fails()) {
@@ -138,54 +137,49 @@ class DocumentController extends Controller
             $folder = $document->id; // Gunakan UUID dokumen sebagai folder
 
             // Update file utama jika ada
-            if ($request->hasFile('imageProfile')) {
-                // Hapus file lama jika ada
-                if ($document->imageProfile && Storage::disk('public')->exists($document->imageProfile)) {
-                    Storage::disk('public')->delete($document->imageProfile);
+            if ($request->hasFile('docsKtp')) {
+                if ($document->docsKtp && Storage::disk('public')->exists($document->docsKtp)) {
+                    Storage::disk('public')->delete($document->docsKtp);
                 }
-                $document->imageProfile = $this->saveFile($request->file('imageProfile'), $folder);
+                $document->docsKtp = $this->saveFile($request->file('docsKtp'), $folder);
+            }
+            if ($request->hasFile('docsIjazah')) {
+                if ($document->docsIjazah && Storage::disk('public')->exists($document->docsIjazah)) {
+                    Storage::disk('public')->delete($document->docsIjazah);
+                }
+                $document->docsIjazah = $this->saveFile($request->file('docsIjazah'), $folder);
+            }
+            if ($request->hasFile('docsSim')) {
+                if ($document->docsSim && Storage::disk('public')->exists($document->docsSim)) {
+                    Storage::disk('public')->delete($document->docsSim);
+                }
+                $document->docsSim = $this->saveFile($request->file('docsSim'), $folder);
+            }
+            if ($request->hasFile('docsAkte')) {
+                if ($document->docsAkte && Storage::disk('public')->exists($document->docsAkte)) {
+                    Storage::disk('public')->delete($document->docsAkte);
+                }
+                $document->docsAkte = $this->saveFile($request->file('docsAkte'), $folder);
+            }
+            if ($request->hasFile('docsTransport')) {
+                if ($document->docsTransport && Storage::disk('public')->exists($document->docsTransport)) {
+                    Storage::disk('public')->delete($document->docsTransport);
+                }
+                $document->docsTransport = $this->saveFile($request->file('docsTransport'), $folder);
+            }
+            if ($request->hasFile('docsSelfieKtp')) {
+                if ($document->docsSelfieKtp && Storage::disk('public')->exists($document->docsSelfieKtp)) {
+                    Storage::disk('public')->delete($document->docsSelfieKtp);
+                }
+                $document->docsSelfieKtp = $this->saveFile($request->file('docsSelfieKtp'), $folder);
+            }
+            if ($request->hasFile('docsImageProfile')) {
+                if ($document->docsImageProfile && Storage::disk('public')->exists($document->docsImageProfile)) {
+                    Storage::disk('public')->delete($document->docsImageProfile);
+                }
+                $document->docsImageProfile = $this->saveFile($request->file('docsImageProfile'), $folder);
             }
 
-            if ($request->hasFile('familyProfile')) {
-                if ($document->familyProfile && Storage::disk('public')->exists($document->familyProfile)) {
-                    Storage::disk('public')->delete($document->familyProfile);
-                }
-                $document->familyProfile = $this->saveFile($request->file('familyProfile'), $folder);
-            }
-
-            if ($request->hasFile('ktpPhoto')) {
-                if ($document->ktpPhoto && Storage::disk('public')->exists($document->ktpPhoto)) {
-                    Storage::disk('public')->delete($document->ktpPhoto);
-                }
-                $document->ktpPhoto = $this->saveFile($request->file('ktpPhoto'), $folder);
-            }
-
-            if ($request->hasFile('selfiePhoto')) {
-                if ($document->selfiePhoto && Storage::disk('public')->exists($document->selfiePhoto)) {
-                    Storage::disk('public')->delete($document->selfiePhoto);
-                }
-                $document->selfiePhoto = $this->saveFile($request->file('selfiePhoto'), $folder);
-            }
-
-            // Update file tambahan jika ada
-            if ($request->has('additionalFiles')) {
-                $additionalFiles = json_decode($document->extra, true) ?? []; // Ambil file tambahan yang sudah ada
-
-                foreach ($request->additionalFiles as $additionalFile) {
-                    if (isset($additionalFile['file'])) {
-                        // Simpan file baru
-                        $filePath = $this->saveFile($additionalFile['file'], $folder);
-                        $additionalFiles[] = [
-                            'name' => $additionalFile['name'],
-                            'type' => $additionalFile['type'],
-                            'url' => $filePath,
-                        ];
-                    }
-                }
-
-                // Update field `extra` dengan file tambahan baru
-                $document->extra = json_encode($additionalFiles);
-            }
 
             // Update userId jika ada
             if ($request->has('userId')) {
@@ -205,4 +199,15 @@ class DocumentController extends Controller
             ], 500);
         }
     }
+
+    public function show($id)
+    {
+        $document = Document::findOrFail($id);
+        return response()->json($document);
+    }
+
+
+
+
+
 }
