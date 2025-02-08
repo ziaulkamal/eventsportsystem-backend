@@ -25,26 +25,28 @@ use App\Http\Controllers\API\CoachController;
 
 
 // Routes tanpa autentikasi (akses umum)
-Route::get('/auth/token', [Controller::class, 'getAccessToken']);
-Route::get('/fetch-people/{nik}', [Controller::class, 'getIdentityPeople']);
-Route::get('/fetch-people-with-attribute', [Controller::class, 'getIdentityPeopleByAttributes']);
+
 
 Route::middleware('auth:sanctum')->get('/protected-endpoint', function (Request $request) {
     return response()->json(['message' => 'Authenticated']);
 });
 
-Route::get('athlete-complete', [PersonController::class, 'athlete']);
-Route::get('coach-complete', [PersonController::class, 'coach']);
-Route::get('athelete-people/{id}', [AthleteController::class, 'getpeople']);
-Route::get('coach-people/{id}', [CoachController::class, 'getpeople']);
-// Rute login (tidak perlu autentikasi untuk login)
 Route::post('/login', [AuthController::class, 'login']);
-Route::apiResource('people', PersonController::class);
-Route::apiResource('documents', DocumentController::class);
-Route::apiResource('coaches', CoachController::class);
-Route::patch('documents-patch/{id}', [DocumentController::class, 'doPatch']);
 // Routes yang dilindungi autentikasi (auth:sanctum middleware)
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/auth/token', [Controller::class, 'getAccessToken']);
+    Route::get('/fetch-people/{nik}', [Controller::class, 'getIdentityPeople']);
+    Route::get('/fetch-people-with-attribute', [Controller::class, 'getIdentityPeopleByAttributes']);
+
+    Route::get('athlete-complete', [PersonController::class, 'athlete']);
+    Route::get('coach-complete', [PersonController::class, 'coach']);
+    Route::get('athelete-people/{id}', [AthleteController::class, 'getpeople']);
+    Route::get('coach-people/{id}', [CoachController::class, 'getpeople']);
+    // Rute login (tidak perlu autentikasi untuk login)
+    Route::apiResource('people', PersonController::class);
+    Route::apiResource('documents', DocumentController::class);
+    Route::apiResource('coaches', CoachController::class);
+    Route::patch('documents-patch/{id}', [DocumentController::class, 'doPatch']);
     // Logout route (membutuhkan autentikasi)
     Route::post('/logout', [AuthController::class, 'logout']);
 
