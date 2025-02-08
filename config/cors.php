@@ -8,6 +8,7 @@ return [
         'http://103.127.96.144:8101',
         'http://103.127.96.144:8121',
         'http://localhost:8121',
+        'http://192.168.29.132:8121',
     ], // Ganti dengan URL frontend Anda
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
