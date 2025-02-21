@@ -113,6 +113,7 @@ class DocumentController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->all());
         // Validasi input
         $validator = Validator::make($request->all(), [
             'docsKtp'           => 'sometimes|file|mimes:jpeg,png,jpg|max:5120',

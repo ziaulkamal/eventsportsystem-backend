@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -23,18 +24,17 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid credentials',
+                'message' => 'Akses tidak dikenal !',
             ], 401);
         }
 
         $token = $user->createToken('API Token')->plainTextToken;
-
+        $cookie = cookie('auth_token', $token, 60 * 24, null, null, true, true);
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
             'data' => $user,
-            'token' => $token,
-        ], 200);
+        ], 200)->withCookie($cookie);
     }
 
     public function logout(Request $request)
@@ -42,12 +42,15 @@ class AuthController extends Controller
         $user = Auth::user();
 
         if ($user) {
-            $user->tokens()->delete();
+            $user->tokens()->delete();  // Hapus semua token
+
+            // Hapus cookie
+            $cookie = Cookie::forget('auth_token');
 
             return response()->json([
                 'success' => true,
                 'message' => 'Logout successful',
-            ], 200);
+            ])->withCookie($cookie);
         }
 
         return response()->json([

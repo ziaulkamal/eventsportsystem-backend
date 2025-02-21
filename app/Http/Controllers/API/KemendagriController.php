@@ -61,4 +61,24 @@ class KemendagriController extends Controller
 
         return response()->json($result);
     }
+
+    public function searchKontingen(Request $request)
+    {
+        $term = $request->input('term'); // Mendapatkan kata kunci pencarian
+
+        // Mengambil data dari model dan melakukan pencarian dengan 'like'
+        $kontingen = Regencies::where('name', 'LIKE', "%{$term}%")
+        ->orderBy('name') // Sortir berdasarkan nama secara alfabetis
+        ->get();
+
+        // Mengembalikan data dalam format yang sesuai dengan Select2
+        return response()->json([
+            'results' => $kontingen->map(function ($item) {
+                return [
+                    'id' => $item->id, // id kontingen
+                    'text' => $item->name // nama kontingen
+                ];
+            })
+        ]);
+    }
 }

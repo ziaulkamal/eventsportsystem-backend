@@ -17,23 +17,27 @@ class Schedule extends Model
     protected $keyType = 'string'; // Set key type to string for UUID
 
     protected $fillable = [
+        'id',
         'date',
-        'start_time',
-        'end_time',
         'venueId',
+        'sportId',
         'sportClassId',
         'status',
         'userId',
     ];
 
     protected $casts = [
-        'id' => 'string', // Ensure UUID is cast as string
-        'date' => 'date', // Cast date as date
-        'start_time' => 'datetime:H:i', // Cast start_time as time
-        'end_time' => 'datetime:H:i', // Cast end_time as time
+        // 'id' => 'uuid',
+        'date' => 'date',  // Format tanggal standar
     ];
 
+
     // Relationships
+    public function sport()
+    {
+        return $this->belongsTo(Sport::class, 'sportId');
+    }
+
     public function venue()
     {
         return $this->belongsTo(Venue::class, 'venueId');
@@ -42,5 +46,10 @@ class Schedule extends Model
     public function sportClass()
     {
         return $this->belongsTo(SportClass::class, 'sportClassId');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userId');
     }
 }

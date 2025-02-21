@@ -25,8 +25,7 @@ class PersonController extends Controller
         // Aturan validasi
         $rules = [
             'fullName' => 'required|string|max:255',
-            'age' => 'required|integer',
-            'birthdate' => 'required|date',
+            'birthdate' => 'required',
             'identityNumber' => 'required|string|unique:people',
             'familyIdentityNumber' => 'nullable|string',
             'gender' => 'required|in:male,female',
@@ -38,7 +37,7 @@ class PersonController extends Controller
             'villageId' => 'required|integer',
             'phoneNumber' => 'required|string',
             'email' => 'nullable|email',
-            'documentId' => 'required|uuid', // documentId tetap dari frontend
+            // 'documentId' => 'required|uuid', // documentId tetap dari frontend
             'userId' => 'nullable|uuid',
         ];
 
@@ -63,19 +62,19 @@ class PersonController extends Controller
                 'errors' => $errors,
             ], 422);
         }
-
+        $uuidDocument = Str::uuid();
         // Jika validasi berhasil, simpan data ke database
         Document::insert([
-            'id' => $request->documentId,
+            'id' => $uuidDocument,
         ]);
         // Format ulang birthdate menjadi timestamp ISO 8601
         $formattedBirthdate = Carbon::parse($request->birthdate)->toIso8601String(); // Format ISO 8601
-
+        // dd($formattedBirthdate);
         // Simpan data ke tabel people
         $person = Person::create([
             'id' => Str::uuid(), // Generate UUID untuk id
             'fullName' => $request->fullName,
-            'age' => $request->age,
+            'age' => $this->calculateAge($request->birthdate),
             'birthdate' => $formattedBirthdate, // Menyimpan birthdate dengan format timestamp ISO 8601
             'identityNumber' => $request->identityNumber,
             'familyIdentityNumber' => $request->familyIdentityNumber,
@@ -88,7 +87,7 @@ class PersonController extends Controller
             'villageId' => $request->villageId,
             'phoneNumber' => $request->phoneNumber,
             'email' => $request->email,
-            'documentId' => $request->documentId,
+            'documentId' => $uuidDocument,
             'userId' => $request->userId,
         ]);
 
@@ -231,28 +230,28 @@ class PersonController extends Controller
                 $weight = $athlete->weight ? intval($athlete->weight) . ' Kg' : 'Tidak ada data';
 
                 return [
-                    'id'    => $person->id,
-                    'identityNumber' => $person->identityNumber,
-                    'familyIdentityNumber' => $person->familyIdentityNumber,
-                    'phoneNumber'   => $person->phoneNumber,
-                    'fullName' => ucwords(strtolower($person->fullName)),
-                    'birthdate' => $person->birthdate,
-                    'age' => $person->age . ' Tahun',
-                    'religion' => $religionOptions[$person->religion] ?? 'Tidak ada data', // Konversi agama ke string
-                    'address' => ucwords(strtolower($person->streetAddress)),
-                    'province' => ucwords(strtolower(optional($person->province)->name)),
-                    'regencie' => ucwords(strtolower(optional($person->regencie)->name)),
-                    'district' => ucwords(strtolower(optional($person->district)->name)),
-                    'village' => ucwords(strtolower(optional($person->village)->name)),
-                    'imageProfile' => optional($person->document)->docsImageProfile,
+                    'id'                    => $person->id,
+                    'identityNumber'        => $person->identityNumber,
+                    'familyIdentityNumber'  => $person->familyIdentityNumber,
+                    'phoneNumber'           => $person->phoneNumber,
+                    'fullName'              => ucwords(strtolower($person->fullName)),
+                    'birthdate'             => $person->birthdate,
+                    'age'                   => $person->age . ' Tahun',
+                    'religion'              => $religionOptions[$person->religion] ?? 'Tidak ada data', // Konversi agama ke string
+                    'address'               => ucwords(strtolower($person->streetAddress)),
+                    'province'              => ucwords(strtolower(optional($person->province)->name)),
+                    'regencie'              => ucwords(strtolower(optional($person->regencie)->name)),
+                    'district'              => ucwords(strtolower(optional($person->district)->name)),
+                    'village'               => ucwords(strtolower(optional($person->village)->name)),
+                    'imageProfile'          => optional($person->document)->docsImageProfile,
                     'regional_representative' => optional($athlete->regional)->name,
-                    'sport' => optional($athlete->sport)->name,
-                    'gender' => $person->gender,
-                    'weight' => $weight,
-                    'height' => $height,
-                    'updated_timestamp' => $person->updated_at,
-                    'documentId' => $person->documentId,
-                    'athleetId' => $athlete->id,
+                    'sport'                 => optional($athlete->sport)->name,
+                    'gender'                => $person->gender,
+                    'weight'                => $weight,
+                    'height'                => $height,
+                    'updated_timestamp'     => Carbon::parse($person->updated_at)->translatedFormat('d F Y'),
+                    'documentId'            => $person->documentId,
+                    'athleetId'             => $athlete->id,
                 ];
             });
 
@@ -335,5 +334,291 @@ class PersonController extends Controller
         // Return response
         return response()->json($filteredData, 200);
     }
+
+    private function calculateAge($value)
+    {
+        // Mengonversi tanggal lahir ke objek Carbon
+        $birthdate = Carbon::parse($value);
+
+        // Mendapatkan tanggal saat ini
+        $now = Carbon::now();
+
+        // Menghitung usia berdasarkan tahun
+        $age = $now->diffInYears($birthdate);
+
+        // Memeriksa apakah bulan dan hari sekarang sudah melewati tanggal lahir
+        if ($now->isBefore($birthdate->copy()->addYears($age))) {
+            $age--; // Jika belum, usia tidak genap
+        }
+
+        return $age;
+    }
+
+    public function getCoaches(Request $request)
+    {
+        $query = Person::with([
+            'province',
+            'regencie',
+            'district',
+            'village',
+            'coach.sport',
+            'coach.sportClass',
+            'coach.regional',
+            'document'
+        ])->whereHas('coach', function ($query) {
+            $query->whereIn('role', ['coach', 'coach_asisten']);
+        })
+        ->orderBy('created_at', 'desc');
+
+        // Cek apakah ada parameter pencarian dari DataTables
+        if (!empty($request->input('search')['value'])) {
+            $search = $request->input('search')['value'];
+            $query->where('fullName', 'LIKE', "%{$search}%"); // Filter berdasarkan nama
+        }
+
+        // Hitung total data sebelum filtering
+        $totalData = $query->count();
+
+        // Ambil data sesuai pagination DataTables
+        $people = $query->offset($request->start)
+            ->limit($request->length)
+            ->get();
+
+        // Jika tidak ada data
+        if ($people->isEmpty()) {
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+
+        // Konversi agama
+        $religionOptions = [
+            1 => 'Islam',
+            2 => 'Kristen Katolik',
+            3 => 'Kristen Protestan',
+            4 => 'Hindu',
+            5 => 'Buddha',
+            6 => 'Konghucu',
+        ];
+
+        // Mapping data
+        $filteredData = $people->map(function ($person) use ($religionOptions) {
+            $coach = $person->coach;
+
+            return [
+                'id'    => $person->id,
+                'identityNumber' => $person->identityNumber,
+                'familyIdentityNumber' => $person->familyIdentityNumber,
+                'phoneNumber'   => $person->phoneNumber,
+                'fullName' => ucwords(strtolower($person->fullName)),
+                'birthdate' => $person->birthdate,
+                'age' => $person->age . ' Tahun',
+                'religion' => $religionOptions[$person->religion] ?? 'Tidak ada data',
+                'address' => ucwords(strtolower($person->streetAddress)),
+                'province' => ucwords(strtolower(optional($person->province)->name)),
+                'regencie' => ucwords(strtolower(optional($person->regencie)->name)),
+                'district' => ucwords(strtolower(optional($person->district)->name)),
+                'village' => ucwords(strtolower(optional($person->village)->name)),
+                'imageProfile' => optional($person->document)->docsImageProfile,
+                'regional_representative' => optional($coach->regional)->name,
+                'sport' => optional($coach->sport)->name,
+                'gender' => $person->gender,
+                'updated_timestamp' => $person->updated_at,
+                'documentId' => $person->documentId,
+                'athleetId' => $coach->id,
+            ];
+        });
+
+        // Return response sesuai format DataTables
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $filteredData->count(),
+            'data' => $filteredData->values()
+        ]);
+    }
+
+    public function getAthlete(Request $request)
+    {
+        // Ambil semua data Person beserta relasinya (Athlete, Document, dan regional_representative)
+        $query = Person::with([
+            'province',
+            'regencie',
+            'district',
+            'village',
+            'athlete.sport',
+            'athlete.sportClass',
+            'athlete.regional',
+            'document'
+        ])
+            ->whereHas('athlete') // Pastikan hanya mengambil data yang punya relasi athlete
+            ->orderBy('created_at', 'desc');
+
+        // Cek apakah ada parameter pencarian dari DataTables
+        if (!empty($request->input('search')['value'])) {
+            $search = $request->input('search')['value'];
+            $query->where('fullName', 'LIKE', "%{$search}%"); // Filter berdasarkan nama
+        }
+
+        // Hitung total data sebelum filtering
+        $totalData = $query->count();
+
+        // Ambil data sesuai pagination DataTables
+        $people = $query->offset($request->start)
+            ->limit($request->length)
+            ->get();
+
+        // Jika tidak ada data
+        if ($people->isEmpty()) {
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+
+        // Daftar agama dalam bentuk array
+        $religionOptions = [
+            1 => 'Islam',
+            2 => 'Kristen Katolik',
+            3 => 'Kristen Protestan',
+            4 => 'Hindu',
+            5 => 'Buddha',
+            6 => 'Konghucu',
+        ];
+
+        // Mapping data
+        $filteredData = $people->map(function ($person) use ($religionOptions) {
+            $athlete = $person->athlete;
+            $height = $athlete->height ? intval($athlete->height) . ' Cm' : 'Tidak ada data';
+            $weight = $athlete->weight ? intval($athlete->weight) . ' Kg' : 'Tidak ada data';
+
+            return [
+                'id'                    => $person->id,
+                'identityNumber'        => $person->identityNumber,
+                'familyIdentityNumber'  => $person->familyIdentityNumber,
+                'phoneNumber'           => $person->phoneNumber,
+                'fullName'              => ucwords(strtolower($person->fullName)),
+                'birthdate'             => $person->birthdate,
+                'age'                   => $person->age . ' Tahun',
+                'religion'              => $religionOptions[$person->religion] ?? 'Tidak ada data', // Konversi agama ke string
+                'address'               => ucwords(strtolower($person->streetAddress)),
+                'province'              => ucwords(strtolower(optional($person->province)->name)),
+                'regencie'              => ucwords(strtolower(optional($person->regencie)->name)),
+                'district'              => ucwords(strtolower(optional($person->district)->name)),
+                'village'               => ucwords(strtolower(optional($person->village)->name)),
+                'imageProfile'          => optional($person->document)->docsImageProfile,
+                'regional_representative' => optional($athlete->regional)->name,
+                'sport'                 => optional($athlete->sport)->name,
+                'gender'                => $person->gender,
+                'weight'                => $weight,
+                'height'                => $height,
+                'updated_timestamp'     => Carbon::parse($person->updated_at)->translatedFormat('d F Y'),
+                'documentId'            => $person->documentId,
+                'athleetId'             => $athlete->id,
+            ];
+        });
+
+        // Return response sesuai format DataTables
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $filteredData->count(),
+            'data' => $filteredData->values()
+        ]);
+    }
+
+    public function getOfficial(Request $request)
+    {
+        $query = Person::with([
+            'province',
+            'regencie',
+            'district',
+            'village',
+            'coach.sport',
+            'coach.sportClass',
+            'coach.regional',
+            'document'
+        ])->whereHas('coach', function ($query) {
+            $query->whereIn('role', ['official', 'official_asisten']);
+        })
+        ->orderBy('created_at', 'desc');
+
+        // Cek apakah ada parameter pencarian dari DataTables
+        if (!empty($request->input('search')['value'])) {
+            $search = $request->input('search')['value'];
+            $query->where('fullName', 'LIKE', "%{$search}%"); // Filter berdasarkan nama
+        }
+
+        // Hitung total data sebelum filtering
+        $totalData = $query->count();
+
+        // Ambil data sesuai pagination DataTables
+        $people = $query->offset($request->start)
+        ->limit($request->length)
+        ->get();
+
+        // Jika tidak ada data
+        if ($people->isEmpty()) {
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+
+        // Konversi agama
+        $religionOptions = [
+                1 => 'Islam',
+                2 => 'Kristen Katolik',
+                3 => 'Kristen Protestan',
+                4 => 'Hindu',
+                5 => 'Buddha',
+                6 => 'Konghucu',
+            ];
+
+        // Mapping data
+        $filteredData = $people->map(function ($person) use ($religionOptions) {
+            $coach = $person->coach;
+
+            return [
+                'id'    => $person->id,
+                'identityNumber' => $person->identityNumber,
+                'familyIdentityNumber' => $person->familyIdentityNumber,
+                'phoneNumber'   => $person->phoneNumber,
+                'fullName' => ucwords(strtolower($person->fullName)),
+                'birthdate' => $person->birthdate,
+                'age' => $person->age . ' Tahun',
+                'religion' => $religionOptions[$person->religion] ?? 'Tidak ada data',
+                'address' => ucwords(strtolower($person->streetAddress)),
+                'province' => ucwords(strtolower(optional($person->province)->name)),
+                'regencie' => ucwords(strtolower(optional($person->regencie)->name)),
+                'district' => ucwords(strtolower(optional($person->district)->name)),
+                'village' => ucwords(strtolower(optional($person->village)->name)),
+                'imageProfile' => optional($person->document)->docsImageProfile,
+                'regional_representative' => optional($coach->regional)->name,
+                'sport' => optional($coach->sport)->name,
+                'gender' => $person->gender,
+                'updated_timestamp' => $person->updated_at,
+                'documentId' => $person->documentId,
+                'athleetId' => $coach->id,
+            ];
+        });
+
+        // Return response sesuai format DataTables
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $filteredData->count(),
+            'data' => $filteredData->values()
+        ]);
+    }
+
+
 
 }

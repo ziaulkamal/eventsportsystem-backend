@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('coach', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('peopleId')->unique();
-            $table->enum('role', ['coach', 'official']);
+            $table->enum('role', ['coach', 'coach_asisten', 'official', 'official_asisten']);
             $table->uuid('sportId');
             $table->string('regionalRepresentative');
             $table->timestamps();

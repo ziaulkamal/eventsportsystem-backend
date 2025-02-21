@@ -25,9 +25,9 @@ class CoachController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'peopleId' => 'required|uuid|unique:coach,peopleId',
-            'role' => 'required|in:coach,official',
-            'sportId' => 'required|uuid',
+            'peopleId'  => 'required|uuid|unique:coach,peopleId',
+            'role'      => 'required|in:coach,official,coach_asisten,official_asisten',
+            'sportId'   => 'required|uuid',
             'regionalRepresentative' => 'required|string',
         ]);
 
@@ -72,9 +72,9 @@ class CoachController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'peopleId' => 'uuid|unique:coach,peopleId,' . $id,
-            'role' => 'in:coach,official',
-            'sportId' => 'uuid',
+            'peopleId'  => 'uuid|unique:coach,peopleId,' . $id,
+            'role'      => 'in:coach,official,coach_asisten,official_asisten',
+            'sportId'   => 'uuid',
             'regionalRepresentative' => 'string',
         ]);
 

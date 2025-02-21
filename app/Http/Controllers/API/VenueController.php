@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Venue;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class VenueController extends Controller
 {
@@ -34,11 +36,32 @@ class VenueController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // Create venue
-        $venue = Venue::create($validator->validated());
+        $validatedData = $validator->validated();
+
+        // Ambil 8 desimal pertama dari latitude dan longitude
+        $latitude = number_format($validatedData['latitude'], 8, '.', '');
+        $longitude = number_format($validatedData['longitude'], 8, '.', '');
+
+        // Cek apakah latitude dan longitude sudah terdaftar dengan presisi 8 desimal
+        $existingVenue = Venue::whereRaw("ROUND(latitude, 8) = ?", [$latitude])
+        ->whereRaw("ROUND(longitude, 8) = ?", [$longitude])
+        ->first();
+
+        if ($existingVenue) {
+            return response()->json([
+                'message' => "Lokasi ini sudah didaftarkan dengan nama {$existingVenue->name}"
+            ], 422);
+        }
+
+        $validatedData['id'] = Str::uuid(); // Tambahkan UUID ke data yang divalidasi
+        $validatedData['latitude'] = $latitude;
+        $validatedData['longitude'] = $longitude;
+
+        $venue = Venue::create($validatedData);
 
         return response()->json($venue, 201);
     }
+
 
     // Get a single venue by ID
     public function show($id)
@@ -79,5 +102,55 @@ class VenueController extends Controller
         $venue->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function getVenue(Request $request)
+    {
+        $query = Venue::orderBy('created_at', 'desc');
+
+        // Cek apakah ada parameter pencarian dari DataTables
+        if (!empty($request->input('search')['value'])) {
+            $search = $request->input('search')['value'];
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+
+        // Hitung total data sebelum filtering
+        $totalData = Venue::count();
+        $totalFiltered = $query->count();
+
+        // Ambil data sesuai pagination DataTables
+        $venues = $query->offset($request->start)
+        ->limit($request->length)
+        ->get();
+
+        // Jika tidak ada data
+        if ($venues->isEmpty()) {
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalData,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+
+        // Mapping data untuk response DataTables
+        $filteredData = $venues->map(function ($venue) {
+            return [
+                'id' => $venue->id,
+                'name' => ucwords(strtolower($venue->name)),
+                'location' => ucwords(strtolower($venue->location)),
+                'latitude' => $venue->latitude,
+                'longitude' => $venue->longitude,
+                'status' => $venue->status,
+                'updated_timestamp' => Carbon::parse($venue->updated_at)->translatedFormat('d F Y'),
+            ];
+        });
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $totalFiltered,
+            'data' => $filteredData->values()
+        ]);
     }
 }

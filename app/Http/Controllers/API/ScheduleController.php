@@ -1,18 +1,19 @@
 <?php
-// app/Http/Controllers/API/ScheduleController.php
+
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ScheduleController extends Controller
 {
     // Get all schedules
     public function index()
     {
-        $schedules = Schedule::with(['venue', 'sportClass'])->get();
+        $schedules = Schedule::with(['venue', 'sportClass', 'sport', 'user'])->get();
         return response()->json($schedules);
     }
 
@@ -22,12 +23,13 @@ class ScheduleController extends Controller
         // Validation rules
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            // 'start_time' => 'required|date_format:H:i',
+            // 'end_time' => 'required|date_format:H:i|after:start_time',
             'venueId' => 'required|uuid|exists:venues,id',
+            'sportId' => 'required|uuid|exists:sports,id',
             'sportClassId' => 'required|uuid|exists:sport_classes,id',
             'status' => 'sometimes|in:active,inactive',
-            'userId' => 'nullable|uuid',
+            'userId' => 'nullable|uuid|exists:users,id',
         ]);
 
         // Return validation errors if any
@@ -36,15 +38,22 @@ class ScheduleController extends Controller
         }
 
         // Create schedule
-        $schedule = Schedule::create($validator->validated());
+        $validatedData = $validator->validated();
+
+        // Generate UUID for new schedule
+        $validatedData['id'] = Str::uuid(); // Automatically generate UUID
+
+        // Create the schedule in the database
+        $schedule = Schedule::create($validatedData);
 
         return response()->json($schedule, 201);
     }
 
+
     // Get a single schedule by ID
     public function show($id)
     {
-        $schedule = Schedule::with(['venue', 'sportClass'])->findOrFail($id);
+        $schedule = Schedule::with(['venue', 'sportClass', 'sport', 'user'])->findOrFail($id);
         return response()->json($schedule);
     }
 
@@ -54,12 +63,13 @@ class ScheduleController extends Controller
         // Validation rules
         $validator = Validator::make($request->all(), [
             'date' => 'sometimes|date',
-            'start_time' => 'sometimes|date_format:H:i',
-            'end_time' => 'sometimes|date_format:H:i|after:start_time',
+            // 'start_time' => 'sometimes|date_format:H:i',
+            // 'end_time' => 'sometimes|date_format:H:i|after:start_time',
             'venueId' => 'sometimes|uuid|exists:venues,id',
+            'sportId' => 'sometimes|uuid|exists:sports,id',
             'sportClassId' => 'sometimes|uuid|exists:sport_classes,id',
             'status' => 'sometimes|in:active,inactive',
-            'userId' => 'nullable|uuid',
+            'userId' => 'nullable|uuid|exists:users,id',
         ]);
 
         // Return validation errors if any
