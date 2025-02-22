@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+    poradevapi:
+        container_name: poradevapi
+        image: laravel_frankenphp
+        build: .
+        ports:
+            - 8000:80
+        env_file:
+            - .env
+
