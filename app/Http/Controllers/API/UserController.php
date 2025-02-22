@@ -13,7 +13,7 @@ class UserController extends Controller
     // Get all users
     public function index()
     {
-        $users = User::with(['person', 'level'])->get();
+        $users = User::get();
         return response()->json($users);
     }
 
