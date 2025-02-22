@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:php8.3
+FROM dunglas/frankenphp:php8.2.27
 
 ENV SERVER_NAME=":80"
 
@@ -12,4 +12,4 @@ RUN apt update && apt install zip libzip-dev default-mysql-client -y && \
 
 COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
 
-RUN composer install 
+RUN composer install
