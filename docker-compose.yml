@@ -1,12 +1,29 @@
 version: '3'
 
 services:
-    poradevapi:
-        container_name: poradevapi
-        image: laravel_frankenphp
-        build: .
-        ports:
-            - 8000:80
-        env_file:
-            - .env
+  poradevapi:
+    container_name: poradevapi
+    image: laravel_frankenphp
+    build: .
+    ports:
+      - 8000:80
+    env_file:
+      - .env
+    depends_on:
+      - mysql
 
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: frankenphp
+      MYSQL_USER: root
+      MYSQL_PASSWORD: toor
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
