@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN apt-update && apt-install zip libzip-dev -y && \
+RUN apt update && apt install zip libzip-dev -y && \
     docker-php-ext-install zip && \
     docker-php-ext-enable zip
 
