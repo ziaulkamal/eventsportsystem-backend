@@ -188,6 +188,11 @@
                 },
                 dataSrc: function(json) {
                     return json.data; // Gunakan data yang dikembalikan dari backend
+                },
+                headers: {
+                    'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             },
             "pageLength": 10, // Jumlah data per halaman
@@ -308,6 +313,11 @@
                     url: '/api/housing', // URL untuk mengirim data
                     method: 'POST',
                     data: formData,
+                    headers: {
+                        'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     success: function(response) {
                         Swal.fire({
                             title: "Berhasil !",

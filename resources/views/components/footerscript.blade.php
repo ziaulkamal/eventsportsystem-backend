@@ -16,4 +16,5 @@
 <script src="{{ asset('assets/js/dataTables.bootstrap5.min.js') }}"></script>
 <script src="{{ asset('assets/js/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('assets/js/responsive.bootstrap5.min.js') }}"></script>
+<script src="{{ asset('assets/js/psix.js') }}"></script>
 @yield('script')

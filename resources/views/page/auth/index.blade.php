@@ -71,7 +71,9 @@ document.querySelector('form').addEventListener('submit', async function(e) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
+            credentials: 'include',
             body: JSON.stringify({
                 username_or_email: user_or_email,
                 password: password
@@ -85,11 +87,7 @@ document.querySelector('form').addEventListener('submit', async function(e) {
             alertMessage.innerText = 'Login berhasil! Anda akan segera dialihkan.';
             alertBox.classList.remove('d-none', 'alert-outline-danger');
             alertBox.classList.add('alert-outline-success');
-
-            // Simpan token dan user data ke dalam cookies
-            document.cookie = `auth_token=${data.token}; path=/; max-age=3600; secure; httponly`;
-            document.cookie = `user_data=${btoa(JSON.stringify(data.data))}; path=/; max-age=3600; secure;`;
-
+            localStorage.setItem('user_data', JSON.stringify(data.data));
             // Redirect setelah beberapa detik
             setTimeout(() => {
                 window.location.href = '/dashboard';

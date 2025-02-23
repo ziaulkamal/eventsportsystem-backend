@@ -137,6 +137,11 @@ $(document).ready(function() {
             },
             dataSrc: function(json) {
                 return json.data; // Gunakan data yang dikembalikan dari backend
+            },
+            headers: {
+                'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         },
         "pageLength": 5, // Jumlah data per halaman

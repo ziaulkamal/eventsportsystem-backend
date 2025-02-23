@@ -197,9 +197,11 @@
             data: formData,
             processData: false,
             contentType: false,
-            // headers: {
-            //     Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-            // },
+            headers: {
+                'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                // 'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             success: function (response) {
                 Swal.fire({
                     title: "Berhasil !",

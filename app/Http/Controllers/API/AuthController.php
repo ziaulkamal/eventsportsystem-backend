@@ -7,7 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -19,39 +21,61 @@ class AuthController extends Controller
         ]);
 
         $fieldType = filter_var($request->username_or_email, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        $user = User::where($fieldType, $request->username_or_email)->first();
+        $user = User::with(['people','level'])->where($fieldType, $request->username_or_email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Akses tidak dikenal !',
+                'message' => 'Akses tidak dikenal!',
             ], 401);
         }
 
+        // Buat token
         $token = $user->createToken('API Token')->plainTextToken;
-        $cookie = cookie('auth_token', $token, 60 * 24, null, null, true, true);
+        $image = $user->people->documentId === null
+            ? 'assets/img/default-bg/' . ($user->people->gender === "male" ? 'male.png' : 'female.png')
+            : 'storage/' . $user->people->document->docsImageProfile;
+
+        $userData = [
+            'peopleId'  => $user->peopleId,
+            'image'     => $image,
+            'name'      => $user->people->fullName,
+            'role'      => $user->level->role ?? null,
+            'roleName'  => $user->level->name ?? null,
+            '_psix'     => $token
+            // 'hasParent' => $user->level->parentId,
+        ];
+        // dd($userData);
+        // Buat cookie auth_token (simpan token di cookie)
+        $authCookie = cookie('auth_token', $token, 60 * 24, '/', null, false, true);
+
+        // Kembalikan response dengan cookies dan data pengguna
         return response()->json([
             'success' => true,
             'message' => 'Login successful',
             'token'   => $token,
-            'data'    => $user,
-        ], 200)->withCookie($cookie);
+            'data'    => $userData,  // Data pengguna dikirim dalam response
+        ], 200)->withCookie($authCookie);
     }
+
+
 
     public function logout(Request $request)
     {
         $user = Auth::user();
 
         if ($user) {
-            $user->tokens()->delete();  // Hapus semua token
+            // Hapus semua token
+            $user->tokens()->delete();
 
-            // Hapus cookie
-            $cookie = Cookie::forget('auth_token');
+            // Hapus cookies di server
+            $authCookie = Cookie::forget('auth_token');
+            $userCookie = Cookie::forget('user_data');
 
             return response()->json([
                 'success' => true,
                 'message' => 'Logout successful',
-            ])->withCookie($cookie);
+            ])->withCookie($authCookie)->withCookie($userCookie);
         }
 
         return response()->json([
@@ -76,14 +100,28 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Auto login setelah registrasi
         $token = $user->createToken('API Token')->plainTextToken;
+
+        $userData = json_encode([
+            'id'    => $user->id,
+            'name'  => $user->name,
+            'email' => $user->email,
+            'role'  => 'user',
+        ]);
+
+        $encryptedData = Crypt::encryptString($userData);
+
+        // Buat cookie
+        $authCookie = cookie('auth_token', $token, 60 * 24, '/', null, false, true);
+        $userCookie = cookie('user_data', $encryptedData, 60 * 24, '/', null, false, false);
 
         return response()->json([
             'success' => true,
             'message' => 'Registration successful',
             'data' => $user,
             'token' => $token,
-        ], 201);
+        ], 201)->withCookie($authCookie)->withCookie($userCookie);
     }
 
     public function getUser()

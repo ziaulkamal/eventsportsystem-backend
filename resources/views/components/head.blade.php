@@ -178,43 +178,25 @@
             <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
                 <span class="user-info">
                     <span class="user-letter">
-                        <img src="assets/img/profiles/avator1.jpg" alt="" class="img-fluid">
+                        <img src="#" id="image-profile" alt="" class="img-fluid">
                     </span>
                     <span class="user-detail">
-                        <span class="user-name">John Smilga</span>
-                        <span class="user-role">Super Admin</span>
+                        <span class="user-name" id="name_user"></span>
+                        <span class="user-role" id="name_level"></span>
                     </span>
                 </span>
             </a>
             <div class="dropdown-menu menu-drop-user">
                 <div class="profilename">
-                    <div class="profileset">
-                        <span class="user-img"><img src="assets/img/profiles/avator1.jpg" alt="">
-                            <span class="status online"></span></span>
-                        <div class="profilesets">
-                            <h6>John Smilga</h6>
-                            <h5>Super Admin</h5>
-                        </div>
-                    </div>
-                    <hr class="m-0">
-                    <a class="dropdown-item" href="profile.html"> <i class="me-2" data-feather="user"></i> My
-                        Profile</a>
-                    <a class="dropdown-item" href="general-settings.html"><i class="me-2"
-                            data-feather="settings"></i>Settings</a>
-                    <hr class="m-0">
-                    <a class="dropdown-item logout pb-0" href="signin.html"><img
-                            src="assets/img/icons/log-out.svg" class="me-2" alt="img">Logout</a>
+                    <button class="dropdown-item logout pb-0" id="logout"><img
+                            src="{{ asset('assets/img/icons/log-out.svg') }}" class="me-2" alt="img">Logout</button>
                 </div>
             </div>
         </li>
     </ul>
     <div class="dropdown mobile-user-menu">
-        <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
         <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" href="profile.html">My Profile</a>
-            <a class="dropdown-item" href="general-settings.html">Settings</a>
-            <a class="dropdown-item" href="signin.html">Logout</a>
+            <button class="dropdown-item" id="logout-mobile">Logout</button>
         </div>
     </div>
     <!-- /Mobile Menu -->

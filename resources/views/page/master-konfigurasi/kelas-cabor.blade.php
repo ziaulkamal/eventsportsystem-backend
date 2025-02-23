@@ -107,6 +107,12 @@ window.submitKelasCabor = function() {
         url: '/api/sport-classes', // URL untuk mengirim data
         method: 'POST',
         data: formData,
+        ,
+        headers: {
+            'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         success: function(response) {
             Swal.fire({
                 title: "Berhasil!",
@@ -201,7 +207,12 @@ $(document).ready(function() {
         "ajax": {
             url: "/api/sports-class-complete",
             type: "GET",
-            dataSrc: "data"
+            dataSrc: "data",
+            headers: {
+                'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
         },
         "pageLength": 5,
         "columns": [

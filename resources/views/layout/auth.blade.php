@@ -14,9 +14,9 @@
     </head>
         <body class="account-page">
 
-        <div id="global-loader" >
+        {{-- <div id="global-loader" >
 			<div class="whirly-loader"> </div>
-		</div>
+		</div> --}}
         <div class="main-wrapper">
 			<div class="account-content">
 				<div class="login-wrapper">
@@ -43,7 +43,7 @@
 		<script src="{{ asset('assets/js/feather.min.js') }}"></script>
         <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
         {{-- <script src="{{ asset('assets/js/theme-script.js') }}"></script> --}}
-		<script src="{{ asset('assets/js/script.js') }}"></script>
+		{{-- <script src="{{ asset('assets/js/script.js') }}"></script> --}}
         @yield('script')
     </body>
 </html>

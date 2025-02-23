@@ -132,6 +132,11 @@ function loadMendagriAPI() {
     $.ajax({
         url: '/api/provinces',
         type: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         success: function (data) {
             $('#provinsi').empty().append('<option selected disabled>Pilih Provinsi</option>');
             $.each(data, function (name, id) {
@@ -154,6 +159,11 @@ function loadMendagriAPI() {
             $.ajax({
                 url: `/api/regencies/${provinceId}`,
                 type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 success: function (data) {
                     $.each(data, function (name, id) {
                         $('#kabupaten_kota').append(new Option(name, id));
@@ -176,6 +186,11 @@ function loadMendagriAPI() {
             $.ajax({
                 url: `/api/districts/${regencyId}`,
                 type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 success: function (data) {
                     $.each(data, function (name, id) {
                         $('#kecamatan').append(new Option(name, id));
@@ -197,6 +212,11 @@ function loadMendagriAPI() {
             $.ajax({
                 url: `/api/villages/${districtId}`,
                 type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 success: function (data) {
                     $.each(data, function (name, id) {
                         $('#desa').append(new Option(name, id));
@@ -342,8 +362,12 @@ function validateAndSubmitPersonal() {
     $.ajax({
         url: '/api/people',  // Ganti dengan URL endpoint API Anda
         type: 'POST',
-        contentType: 'application/json',
         data: JSON.stringify(formData),
+        headers: {
+            'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         success: function(response) {
             Swal.fire({
                 title: "Berhasil !",
@@ -422,6 +446,11 @@ function setDropdownValue(selector, value, apiUrl) {
     $.ajax({
         url: apiUrl,
         type: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         success: function (data) {
             $(selector).empty().append('<option value="" selected disabled>Pilih...</option>');
             $.each(data, function (name, id) {
@@ -454,6 +483,11 @@ $(document).ready(function() {
                 url: apiUrl,
                 type: 'GET',
                 dataType: 'json',
+                headers: {
+                    'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 success: function (data) {
                     if (data.province) setDropdownValue('#provinsi', data.province, '/api/provinces');
                     if (data.city) setDropdownValue('#kabupaten_kota', data.city, `/api/regencies/${data.province}`);
@@ -501,6 +535,11 @@ $(document).ready(function() {
             $.ajax({
                 url: `/api/people/find-by-nik/${nik}`,
                 type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 success: function(data) {
                     if (data !== 200) {
                         let alertBox = $("#nik-alert");
@@ -515,6 +554,11 @@ $(document).ready(function() {
                         $.ajax({
                             url: `/api/fetch-people/${nik}`,
                             type: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
                             success: function(data) {
                                 if (data) {
                                     let alertBox = $("#nik-alert");
