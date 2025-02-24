@@ -340,10 +340,11 @@ function validateAndSubmitPersonal() {
     if (!isValid) {
         return;
     }
-
+    const parts = tanggalLahir.split("-"); // [ "08", "02", "1981" ]
+    const formattedBirthdate = `${parts[2]}-${parts[1]}-${parts[0]} 07:00:00`;
     const formData = {
         fullName: nama,
-        birthdate: tanggalLahir,
+        birthdate: formattedBirthdate,
         identityNumber: nik,
         familyIdentityNumber: nomorKK,
         gender: jenisKelamin,
@@ -497,7 +498,16 @@ $(document).ready(function() {
                 error: function (xhr) {
                     const response = xhr.responseJSON;
                     console.error('Error fetching data:', response ? response.message : xhr.statusText);
-                    alert('Gagal mengambil data: ' + (response ? response.message : 'Terjadi kesalahan.'));
+                    Swal.fire({
+                        title: "Gagal !",
+                        text: `Gagal mendapatkan data alamat lengkap, harus isi manual!`,
+                        icon: "info",
+                        confirmButtonClass: "btn btn-danger",
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'custom-popup'
+                        }
+                    });
                 }
             });
         }

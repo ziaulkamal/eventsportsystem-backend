@@ -15,6 +15,7 @@ class Housing extends Model
     protected $keyType = 'string'; // Set key type to string for UUID
 
     protected $fillable = [
+        'id',
         'name',
         'location',
         'latitude',

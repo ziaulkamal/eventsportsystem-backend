@@ -47,7 +47,7 @@
                                 </div>
                             </div>
 
-                            <button class="btn btn-primary" onClick="validateAndSubmit()" type="submit">Submit</button>
+                            <button class="btn btn-primary" onClick="validateAndSubmit()" type="button">Submit</button>
                         </div>
                     </div>
 
@@ -191,7 +191,7 @@
                 },
                 headers: {
                     'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
-                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 }
             },
@@ -304,7 +304,6 @@
                     capacity:kapasitas_penginapan,
                     latitude: latitude,
                     longitude: longitude,
-                    name: nama_lokasi,
                     location: `https://www.google.com/maps/@${latitude},${longitude},19z`,
                 };
 
@@ -315,7 +314,7 @@
                     data: formData,
                     headers: {
                         'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
-                        'Content-Type': 'application/json',
+                        // 'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
                     success: function(response) {

@@ -132,6 +132,11 @@
                     url: '/api/coaches', // URL untuk mengirim data
                     method: 'POST',
                     data: formData,
+                    headers: {
+                        'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+                        // 'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     success: function(response) {
                         Swal.fire({
                             title: "Berhasil !",

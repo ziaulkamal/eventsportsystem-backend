@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Housing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class HousingController extends Controller
 {
@@ -34,9 +35,10 @@ class HousingController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
+        $validatedData = $validator->validated();
+        $validatedData['id'] = Str::uuid();
         // Create housing
-        $housing = Housing::create($validator->validated());
+        $housing = Housing::create($validatedData);
 
         return response()->json($housing, 201);
     }

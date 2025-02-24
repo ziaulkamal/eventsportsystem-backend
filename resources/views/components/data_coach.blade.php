@@ -144,7 +144,7 @@
                     data: formData,
                     headers: {
                         'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
-                        'Content-Type': 'application/json',
+                        // 'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
                     success: function(response) {

@@ -67,15 +67,13 @@ class PersonController extends Controller
         Document::insert([
             'id' => $uuidDocument,
         ]);
-        // Format ulang birthdate menjadi timestamp ISO 8601
-        $formattedBirthdate = Carbon::parse($request->birthdate)->toIso8601String(); // Format ISO 8601
-        // dd($formattedBirthdate);
-        // Simpan data ke tabel people
-        $person = Person::create([
+
+
+        $sampleData = [
             'id' => Str::uuid(), // Generate UUID untuk id
             'fullName' => $request->fullName,
             'age' => $this->calculateAge($request->birthdate),
-            'birthdate' => $formattedBirthdate, // Menyimpan birthdate dengan format timestamp ISO 8601
+            'birthdate' => ($request->birthdate), // Menyimpan birthdate dengan format timestamp ISO 8601
             'identityNumber' => $request->identityNumber,
             'familyIdentityNumber' => $request->familyIdentityNumber,
             'gender' => $request->gender,
@@ -89,7 +87,9 @@ class PersonController extends Controller
             'email' => $request->email,
             'documentId' => $uuidDocument,
             'userId' => $request->userId,
-        ]);
+        ];
+        // dd($sampleData);
+        $person = Person::create($sampleData);
 
         // Kembalikan respons sukses
         return response()->json($person, 201);// Status code 201 (Created)

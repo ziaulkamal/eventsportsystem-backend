@@ -12,7 +12,7 @@ class CreatePeopleTable extends Migration
             $table->uuid('id')->primary();
             $table->string('fullName');
             $table->integer('age')->nullable();
-            $table->timestamp('birthdate')->nullable();
+            $table->dateTime('birthdate')->nullable();
             $table->string('identityNumber')->unique();
             $table->string('familyIdentityNumber')->nullable();
             $table->enum('gender', ['male', 'female']);
