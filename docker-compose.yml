@@ -1,5 +1,3 @@
-#version: '3'
-
 services:
   poradevapi:
     container_name: poradevapi
@@ -9,5 +7,13 @@ services:
       - 8000:80
     env_file:
       - .env
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      custom_network:
+        ipv4_address: 172.17.0.2
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.17.0.0/16
