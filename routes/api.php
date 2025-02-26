@@ -67,6 +67,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('images', ImageController::class);
     Route::apiResource('venues', VenueController::class);
     Route::apiResource('schedules', ScheduleController::class);
+
+    Route::get('/schedule-completes', [ScheduleController::class, 'getSchedule']);
     Route::apiResource('player-matches', PlayerMatchController::class);
     Route::apiResource('housing', HousingController::class);
     Route::apiResource('people-housing', PeopleHousingController::class);

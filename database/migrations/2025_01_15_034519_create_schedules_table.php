@@ -11,8 +11,6 @@ class CreateSchedulesTable extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->date('date');
-            // $table->time('start_time');
-            // $table->time('end_time');
             $table->uuid('venueId');
             $table->uuid('sportId');
             $table->uuid('sportClassId');

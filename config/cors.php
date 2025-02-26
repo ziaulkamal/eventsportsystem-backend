@@ -3,11 +3,10 @@
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['*'], // Ganti dengan URL frontend Anda
+    'allowed_origins' => ['*'], // Bisa diganti domain tertentu
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
-    'exposed_headers' => [],
-    'max_age' => 0,
-    'supports_credentials' => true, // Pastikan ini true jika menggunakan cookie atau sesi
+    'exposed_headers' => ['Authorization', 'Set-Cookie'],
+    'supports_credentials' => true, // HARUS TRUE agar cookie bisa dikirim!
 ];
 

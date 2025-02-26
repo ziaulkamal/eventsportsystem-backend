@@ -19,7 +19,7 @@
                         <li class="submenu">
                             <a href="javascript:void(0);"><i data-feather="monitor"></i><span>Data Pertandingan</span><span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="javascript:void(0);">Daftarkan Pertandingan</a></li>
+                                <li><a href="{{ route('pertandingan.data') }}">Daftarkan Pertandingan</a></li>
                                 <li><a href="javascript:void(0);">Daftarkan Atlet</a></li>
                                 <li><a href="javascript:void(0);">Data Pemenang</a></li>
                                 <li><a href="javascript:void(0);">Pencarian</a></li>

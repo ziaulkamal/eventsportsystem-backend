@@ -92,4 +92,64 @@ class ScheduleController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function getSchedule(Request $request)
+    {
+        $query = Schedule::with([
+            'sport',
+            'venue',
+            'sportClass',
+        ])->orderBy('created_at', 'desc');
+        // dd($query);
+
+        // Cek apakah ada parameter pencarian dari DataTables
+        if (!empty($request->input('search')['value'])) {
+            $search = $request->input('search')['value'];
+            $query->where('sport.name', 'LIKE', "%{$search}%")
+            ->orWhere('sportClass.classOption', 'LIKE', "%{$search}%"); // Filter berdasarkan nama
+        }
+
+        // Hitung total data sebelum filtering
+        $totalData = $query->count();
+
+        // Ambil data sesuai pagination DataTables
+        $schedule = $query->offset($request->start)
+        ->limit($request->length)
+        ->get();
+
+        // Jika tidak ada data
+        if ($schedule->isEmpty()) {
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => []
+            ]);
+        }
+
+
+
+        // Mapping data
+        $filteredData = $schedule->map(function ($schedules)  {
+
+
+            return [
+                'id' => $schedules->id,
+                'date' => $schedules->date,
+                'venue' => $schedules->venue->name,
+                'sportId'  => $schedules->sport->name,
+                'sportClassId' => $schedules->sportClass->classOption,
+                'gender' => $schedules->sportClass->type,
+                'status' =>  $schedules->status,
+            ];
+        });
+
+        // Return response sesuai format DataTables
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalData,
+            'recordsFiltered' => $filteredData->count(),
+            'data' => $filteredData->values()
+        ]);
+    }
 }

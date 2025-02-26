@@ -107,10 +107,9 @@ window.submitKelasCabor = function() {
         url: '/api/sport-classes', // URL untuk mengirim data
         method: 'POST',
         data: formData,
-        ,
         headers: {
             'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
         success: function(response) {
@@ -186,6 +185,11 @@ $(document).ready(function() {
     $.ajax({
         url: '/api/sports',
         type: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getPsixFromLocalStorage()}`, // Ganti dengan token yang sesuai
+            // 'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         success: function (data) {
             // Kosongkan select dan tambahkan opsi default
             $('#cabang_olahraga').empty().append('<option selected disabled>Pilih Cabang Olahraga</option>');

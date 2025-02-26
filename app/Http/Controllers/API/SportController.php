@@ -13,7 +13,7 @@ class SportController extends Controller
     // Get all sports
     public function index()
     {
-        $sports = Sport::all();
+        $sports = Sport::orderBy('name', 'asc')->get();
         return response()->json($sports);
     }
 

@@ -99,4 +99,14 @@ class PageController extends Controller
 
         return view('page.penginapan.index', $option);
     }
+
+    public function pertandingan() {
+        $option = [
+            'title'         => 'Daftarkan Pertandingan',
+            'description'   => 'Menampilkan data Daftar Pertandingan secara keseluruhan',
+            'section'       => true,
+        ];
+
+        return view('page.pertandingan.daftarpertandingan', $option);
+    }
 }

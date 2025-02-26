@@ -30,6 +30,7 @@ Route::middleware('token.valid')->group(function () {
     Route::get('/official', [PageController::class, 'official'])->name('official');
     Route::get('/venue', [PageController::class, 'venue'])->name('venue');
     Route::get('/penginapan', [PageController::class, 'penginapan'])->name('penginapan');
+    Route::get('/pertandingan/data', [PageController::class, 'pertandingan'])->name('pertandingan.data');
     Route::get('/master/cabor', [PageController::class, 'master_cabor'])->name('master_cabor');
     Route::get('/master/kelas-cabor', [PageController::class, 'master_kelas_cabor'])->name('master_kelas_cabor');
 });

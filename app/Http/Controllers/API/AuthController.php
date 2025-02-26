@@ -47,8 +47,17 @@ class AuthController extends Controller
         ];
         // dd($userData);
         // Buat cookie auth_token (simpan token di cookie)
-        $authCookie = cookie('auth_token', $token, 60 * 24, '/', null, false, true);
+        $authCookie = cookie('auth_token', $token, 60 * 24, '/', null, true, true, false, 'None');
 
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Login successful',
+        //     'token'   => $token,
+        //     'data'    => $userData,
+        // ])->withCookie($authCookie);
+
+        // dd(response()->withCookie($authCookie)); // Debug
         // Kembalikan response dengan cookies dan data pengguna
         return response()->json([
             'success' => true,
