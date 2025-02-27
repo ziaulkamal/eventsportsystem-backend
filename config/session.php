@@ -8,7 +8,7 @@ return [
 
     'lifetime' => env('SESSION_LIFETIME', 120),
 
-    'expire_on_close' => false,
+    'expire_on_close' => true,
 
     'encrypt' => false,
 
@@ -29,7 +29,7 @@ return [
 
     'path' => '/',
 
-    'domain' => env('SESSION_DOMAIN', null), // Pastikan domain diset jika multi-domain digunakan
+    'domain' => '.poracehjaya.test', // Pastikan domain diset jika multi-domain digunakan
 
     'secure' => env('SESSION_SECURE_COOKIE', true), // Pastikan cookie hanya dikirim melalui HTTPS
 
