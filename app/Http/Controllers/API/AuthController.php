@@ -122,7 +122,7 @@ class AuthController extends Controller
         $encryptedData = Crypt::encryptString($userData);
 
         // Buat cookie
-        $authCookie = cookie('auth_token', $token, 60 * 24, '/', null, false, true);
+        $authCookie = cookie('auth_token', $token, 60 * 24, '/', null, false, true, false, 'Lax');
         $userCookie = cookie('user_data', $encryptedData, 60 * 24, '/', null, false, false);
 
         return response()->json([

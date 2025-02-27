@@ -24,7 +24,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
+        Str::slug(env('APP_NAME', 'psix'), '_') . '_session'
     ),
 
     'path' => '/',
@@ -35,7 +35,7 @@ return [
 
     'http_only' => true, // Cookie tidak bisa diakses via JavaScript
 
-    'same_site' => 'none', // Harus 'none' agar dapat digunakan dengan credentials: 'include'
+    'same_site' => env('SESSION_SAME_SITE', 'lax'), // Harus 'none' agar dapat digunakan dengan credentials: 'include'
 
     'partitioned' => false, // Tidak perlu mengaktifkan partitioned cookie
 
