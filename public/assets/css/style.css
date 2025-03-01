@@ -13171,13 +13171,12 @@ th .checkboxs .checkmarks::after, td .checkboxs .checkmarks::after {
 }
 @media (max-width: 991.98px) {
   .header .header-left .logo {
-    text-align: center;
-    width: 100%;
+    width: 80%;
   }
   .header .header-left .logo img {
     width: 140px;
     position: relative;
-    left: 20px;
+    left: 52px;
   }
 }
 .header .header-left .logo-small {
@@ -13601,6 +13600,9 @@ th .checkboxs .checkmarks::after, td .checkboxs .checkmarks::after {
     top: 0;
     left: 0;
     display: block;
+  }
+  .nav-item .nav-item-box {
+    display:none;
   }
 }
 
